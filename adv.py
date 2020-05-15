@@ -1,6 +1,7 @@
 from room import Room
 from player import Player
 from world import World
+from util import Stack, Queue
 
 import random
 from ast import literal_eval
@@ -12,8 +13,8 @@ world = World()
 # You may uncomment the smaller graphs for development and testing purposes.
 # map_file = "maps/test_line.txt"
 # map_file = "maps/test_cross.txt"
-# map_file = "maps/test_loop.txt"
-map_file = "maps/test_loop_fork.txt"
+map_file = "maps/test_loop.txt"
+# map_file = "maps/test_loop_fork.txt"
 # map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
@@ -28,10 +29,14 @@ player = Player(world.starting_room)
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
 
-def add_room_to_graph(room, dirs):
-    travel_graph[room] = dirs
+def add_room_to_graph(room, neighbors):
+# def add_room_to_graph(room):
+    # traversal_graph[room] = {'n': '?', 's': '?', 'e': '?', 'w': '?'}
+    # print(neighbors)
+    # traversal_graph[room] = {neighbors[i]: '?' for i in range(0, len(neighbors))}
+    traversal_graph[room] = neighbors
 
-def make_exits(dirs):
+def add_exits_to_room(dirs):
     exits = {}
     for exit in dirs:
         next_room = player.current_room.get_room_in_direction(exit).id
@@ -40,47 +45,40 @@ def make_exits(dirs):
     return exits
 
 traversal_path = []
-travel_graph = {}
-
-start_room = player.current_room.id
+traversal_graph = {}
+visited = [None]
 
 # add start room to graph
-add_room_to_graph(start_room, make_exits(player.current_room.get_exits()))
+add_room_to_graph(player.current_room.id, add_exits_to_room(player.current_room.get_exits()))
 
-q = []
-q.append(start_room)
+q = Queue()
+q.enqueue(player.current_room.id)
 
-while len(q):
-    current_room = q.pop()
+s = Stack()
+s.push(player.current_room.id)
+# s = []
+# s.append(player.current_room.id)
 
-    # if the current room is not in the graph, add it
-    if current_room not in travel_graph:
+visited = set()
+
+while q.size() > 0:
+
+    current_room = q.dequeue()
+    
+    if current_room not in traversal_graph:
+        # Get current_room exits
         room_exits = player.current_room.get_exits()
-        # add current_room to graph
-        add_room_to_graph(current_room, make_exits(room_exits))
-    
-    # move to next room
-    for key in travel_graph[current_room]:
-        traversal_path.append(key)
- 
-# print(q)
+        # Add current_room with neighbors to traversal_graph
+        add_room_to_graph(current_room, add_exits_to_room(room_exits))
 
-# while len(q):
-#     r = q.pop()
+    else:
+        print(f'Room {current_room} visited')
+
+    for k, v in traversal_graph[current_room].items():
+        print(k, v)
 
 
-#     if current_room.id not in travel_graph:
-#         travel_graph[player.current_room.id] = {}
-#     # print(current_room.id)
-    
-#     for exit in current_room.get_exits():
-#         next_room = current_room.get_room_in_direction(exit).id
-#         if exit not in travel_graph[current_room.id]:
-#             travel_graph[current_room.id][exit] = next_room
-    
-#     #     q.append(next_room)
-
-print(travel_graph)
+# print(traversal_graph)
 
 # TRAVERSAL TEST - DO NOT MODIFY
 visited_rooms = set()
