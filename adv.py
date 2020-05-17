@@ -115,7 +115,22 @@ while len(traversal_graph) < len(room_graph):
         
 
 
+    # create an empty queue
+
+    # queue up current room
+
+    # Path = []
+    #     if room has unvisited neighbors
+    #         break
+
+    #     add rooms that neighbors have been visited
+
+
+    # travers the path back to a room
+    #     maybe reverse the list
+
     # queue up current room player is waiting in
+    
     q.enqueue([player.current_room.id])
 
     while q.size():
