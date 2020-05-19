@@ -60,122 +60,71 @@ s = Stack()
 s.push(starting_room)
 
 q = Queue()
-visited = set()
 
 while len(traversal_graph) < len(room_graph):
 
-    # follows n until it can't go any farther and waits...
-    while s.size():
-        
+    while s.size() > 0:
         current_room = s.pop()
 
         if current_room not in traversal_graph:
             room_exits = player.current_room.get_exits()
             add_room_to_graph(current_room, room_exits)
 
-            # print(prev_room, traversal_graph[current_room].items())
-            # print(f'Room {current_room} added', prev_room, current_room)
-
         if prev_room is not None:
             traversal_graph[prev_room][travel_dir] = current_room
             traversal_graph[current_room][reverse_direction[travel_dir]] = prev_room
-        # print(traversal_path)
 
-        # print(travel_dir, current_room)
-        # This always goes north 
-        # turn in to random direction ??
-        for room_dir, room_id in traversal_graph[current_room].items():
-            # find the first unvisited room and head that way
-            # tends to be north
-            if room_id == '?':
-                # print(room_dir)
-                travel_dir = room_dir
-                prev_room = current_room
-                player.travel(travel_dir)
-                traversal_path.append(travel_dir)
-                s.push(player.current_room.id)
-                # print('Move',room_dir, room_id, prev_room, player.current_room.id)
-                break
-            else:
-                # print('Chill',room_dir, room_id, prev_room, player.current_room.id)
-                # print(traversal_graph)
-                s.pop()
-        # print(current_room)
-        # print(traversal_graph)
+        if '?' in traversal_graph[current_room].values():
+            room_exits = []
+            for room_dir, room_id in traversal_graph[current_room].items():
+                if room_id == '?':
+                    room_exits.append(room_dir)
 
-    # Stuck at a dead end, go back one step
-    # if len(player.current_room.get_exits()) == 1:
-    #     # print('Waiting', player.current_room.id)
-    #     # print(traversal_path)
-    #     travel_dir = reverse_direction[travel_dir]
-    #     player.travel(travel_dir)
-    #     traversal_path.append(travel_dir)
-    #     # print(traversal_path, player.current_room.id)
-    #     s.push(player.current_room.id)
-        
+            travel_dir = random.choice(room_exits)
+            # print(f'{player.current_room.id}, {current_room} heading {travel_dir}')
+            prev_room = current_room
+            player.travel(travel_dir)
+            traversal_path.append(travel_dir)
+            s.push(player.current_room.id)
+        else:
+            s.pop()
+            # q.enqueue([current_room])
 
-
-    # create an empty queue
-
-    # queue up current room
-
-    # Path = []
-    #     if room has unvisited neighbors
-    #         break
-
-    #     add rooms that neighbors have been visited
-
-
-    # travers the path back to a room
-    #     maybe reverse the list
-
-    # queue up current room player is waiting in
+        # print(traversal_path, player.current_room.id, current_room)
     
     q.enqueue([player.current_room.id])
-
-    while q.size():
+    visited = set()
+    while q.size() > 0:
         path = q.dequeue()
         current_room = path[-1]
-        
+        # print('queue', traversal_path, player.current_room.id, current_room)
         if current_room not in visited:
             visited.add(current_room)
-            # print(current_room, traversal_graph[current_room].values())
             if '?' in traversal_graph[current_room].values():
-                print('Going back', path)
-                for room_dir, room_id in traversal_graph[current_room].items():
-                    pass
-                    # print(prev_room, current_room, room_dir, room_id)
-                    # if room_id == prev_room:
-                    #     # print(current_room, reverse_direction[room_dir])
-                    #     player.travel(reverse_direction[room_dir])
-                    #     traversal_path.append(reverse_direction[room_dir])
-                    #     s.push(current_room)
-                
+                break
             else:
-                print('Going back', path)
-                for room_dir, room_id in traversal_graph[current_room].items():
-                    # if room_id != '?':
-                    # traversal_graph[current_room]
+                for next_room in traversal_graph[current_room].values():
                     prev_room = current_room
                     new_path = list(path)
-                    new_path.append(room_id)
-                    # traversal_path.append(room_dir)
-                    # player.travel(room_dir)
-                    # print(path, new_path)
+                    new_path.append(next_room)
                     q.enqueue(new_path)
-            # print(player.current_room.id)
-        # print(player.current_room.id)
-    # print(q.size())
-    # print(new_path)
 
-        # print(path)
-    # print(traversal_path)        
-
-
-
-
-
-
+    
+    while len(path) > 0:
+        next_room = path.pop(0)
+        if next_room is not player.current_room.id:
+            # print(player.current_room.id, next_room, path)
+            for room_dir, room_id in traversal_graph[player.current_room.id].items():
+                if traversal_graph[player.current_room.id][room_dir] == next_room:
+                    # move the player
+                    player.travel(room_dir)
+                    # append it to traversal_path
+                    traversal_path.append(room_dir)
+                    print(player.current_room.id, traversal_path)
+        # else:
+        #     path.pop()
+                
+    s.push(player.current_room.id)
 
 # TRAVERSAL TEST - DO NOT MODIFY
 visited_rooms = set()
