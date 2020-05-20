@@ -14,8 +14,8 @@ world = World()
 # map_file = "maps/test_line.txt"
 # map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
-map_file = "maps/test_loop_fork.txt"
-# map_file = "maps/main_maze.txt"
+# map_file = "maps/test_loop_fork.txt"
+map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
 room_graph=literal_eval(open(map_file, "r").read())
@@ -59,7 +59,7 @@ s = Stack()
 # Add the id of the starting room
 s.push(starting_room)
 
-q = Queue()
+# q = Queue()
 
 while len(traversal_graph) < len(room_graph):
 
@@ -72,19 +72,25 @@ while len(traversal_graph) < len(room_graph):
             # print(f'Room {current_room} added')
 
         if prev_room is not None:
+            print(prev_room, travel_dir, current_room)
             traversal_graph[prev_room][travel_dir] = current_room
             traversal_graph[current_room][reverse_direction[travel_dir]] = prev_room
+            print(traversal_graph)
             # print('Update Rooms', current_room, player.current_room.id, traversal_graph[current_room], prev_room, traversal_graph[prev_room])
 
         if '?' in traversal_graph[current_room].values():
             room_exits = []
+            # for room_dir, room_id in traversal_graph[current_room].items():
+            #     if room_id == '?':
+            #         room_exits.append(room_dir)
             for room_dir, room_id in traversal_graph[current_room].items():
                 if room_id == '?':
-                    room_exits.append(room_dir)
-
-            travel_dir = random.choice(room_exits)
+                    travel_dir = room_dir
+                    break
+                    # room_exits.append(room_dir)
+            # travel_dir = random.choice(room_exits)
             # print(f'{player.current_room.id}, {current_room} heading {travel_dir}')
-            prev_room = current_room
+            prev_room = player.current_room.id
             player.travel(travel_dir)
             
             traversal_path.append(travel_dir)
@@ -96,12 +102,13 @@ while len(traversal_graph) < len(room_graph):
         # print('stack', traversal_path)
 
             # print(traversal_path, player.current_room.id, current_room)
-        
+    q = Queue() 
     q.enqueue([player.current_room.id])
-    # prev_room = None
+    prev_room = None
 
     visited = set()
     # path = []
+    print('BFS', len(traversal_graph), len(traversal_path))
     while q.size() > 0:
         path = q.dequeue()
         current_room = path[-1]
@@ -121,18 +128,27 @@ while len(traversal_graph) < len(room_graph):
     
     path = path[::-1]
     
-    print(player.current_room.id, path, traversal_graph)
-    while len(path) > 0:
+    # print(player.current_room.id, path, traversal_graph)
+    print(path)
+    while len(path) > 1:
         go_back = path.pop()
+        print('go_back',go_back, player.current_room.id)
         # print(current_room, prev_room)
-        print('Moving', path, go_back, player.current_room.id)
-        for room_dir, room_id in traversal_graph[player.current_room.id].items():
-            if traversal_graph[player.current_room.id][room_dir] == go_back:
+        # print('Moving', path, go_back, player.current_room.id)
+        # print(player.current_room.id)
+        print(path[-1])
+        for room_dir in traversal_graph[go_back]:
+            print('exit', room_dir)
+        # for room_dir, room_id in traversal_graph[player.current_room.id].items():
+            # print(player.current_room.id, path[-1], traversal_graph[player.current_room.id][room_dir] == path[-1])
+            if traversal_graph[go_back][room_dir] == path[-1]:
+                # print(room_dir)
+                travel_dir = room_dir
                 prev_room = player.current_room.id
                 player.travel(room_dir)
                 traversal_path.append(room_dir)
                 current_room = player.current_room.id
-
+    prev_room = None
     s.push(player.current_room.id)
     # while len(path) > 0:
     #     # print('Path - before pop -', player.current_room.id, path)
