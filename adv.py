@@ -72,10 +72,10 @@ while len(traversal_graph) < len(room_graph):
             # print(f'Room {current_room} added')
 
         if prev_room is not None:
-            print(prev_room, travel_dir, current_room)
+            # print(prev_room, travel_dir, current_room)
             traversal_graph[prev_room][travel_dir] = current_room
             traversal_graph[current_room][reverse_direction[travel_dir]] = prev_room
-            print(traversal_graph)
+            # print(traversal_graph)
             # print('Update Rooms', current_room, player.current_room.id, traversal_graph[current_room], prev_room, traversal_graph[prev_room])
 
         if '?' in traversal_graph[current_room].values():
@@ -108,7 +108,7 @@ while len(traversal_graph) < len(room_graph):
 
     visited = set()
     # path = []
-    print('BFS', len(traversal_graph), len(traversal_path))
+    # print('BFS', len(traversal_graph), len(traversal_path))
     while q.size() > 0:
         path = q.dequeue()
         current_room = path[-1]
@@ -129,16 +129,16 @@ while len(traversal_graph) < len(room_graph):
     path = path[::-1]
     
     # print(player.current_room.id, path, traversal_graph)
-    print(path)
+    # print(path)
     while len(path) > 1:
         go_back = path.pop()
-        print('go_back',go_back, player.current_room.id)
+        # print('go_back',go_back, player.current_room.id)
         # print(current_room, prev_room)
         # print('Moving', path, go_back, player.current_room.id)
         # print(player.current_room.id)
-        print(path[-1])
+        # print(path[-1])
         for room_dir in traversal_graph[go_back]:
-            print('exit', room_dir)
+            # print('exit', room_dir)
         # for room_dir, room_id in traversal_graph[player.current_room.id].items():
             # print(player.current_room.id, path[-1], traversal_graph[player.current_room.id][room_dir] == path[-1])
             if traversal_graph[go_back][room_dir] == path[-1]:
@@ -183,7 +183,7 @@ while len(traversal_graph) < len(room_graph):
     # # print('traversal_graph',len(traversal_graph), len(room_graph))
     
     # s.push(player.current_room.id)
-print(player.current_room.id)
+# print(player.current_room.id)
 # print(traversal_graph)
 
 # TRAVERSAL TEST - DO NOT MODIFY
