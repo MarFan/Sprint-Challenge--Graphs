@@ -69,10 +69,12 @@ while len(traversal_graph) < len(room_graph):
         if current_room not in traversal_graph:
             room_exits = player.current_room.get_exits()
             add_room_to_graph(current_room, room_exits)
+            # print(f'Room {current_room} added')
 
         if prev_room is not None:
             traversal_graph[prev_room][travel_dir] = current_room
             traversal_graph[current_room][reverse_direction[travel_dir]] = prev_room
+            # print('Update Rooms', current_room, player.current_room.id, traversal_graph[current_room], prev_room, traversal_graph[prev_room])
 
         if '?' in traversal_graph[current_room].values():
             room_exits = []
@@ -84,16 +86,22 @@ while len(traversal_graph) < len(room_graph):
             # print(f'{player.current_room.id}, {current_room} heading {travel_dir}')
             prev_room = current_room
             player.travel(travel_dir)
+            
             traversal_path.append(travel_dir)
             s.push(player.current_room.id)
+            # print('Stack Move - ', travel_dir, player.current_room.id, prev_room)
         else:
             s.pop()
             # q.enqueue([current_room])
+        # print('stack', traversal_path)
 
-        # print(traversal_path, player.current_room.id, current_room)
-    
+            # print(traversal_path, player.current_room.id, current_room)
+        
     q.enqueue([player.current_room.id])
+    # prev_room = None
+
     visited = set()
+    # path = []
     while q.size() > 0:
         path = q.dequeue()
         current_room = path[-1]
@@ -109,22 +117,58 @@ while len(traversal_graph) < len(room_graph):
                     new_path.append(next_room)
                     q.enqueue(new_path)
 
+    # current_room = player.current_room.id
     
+    path = path[::-1]
+    
+    print(player.current_room.id, path, traversal_graph)
     while len(path) > 0:
-        next_room = path.pop(0)
-        if next_room is not player.current_room.id:
-            # print(player.current_room.id, next_room, path)
-            for room_dir, room_id in traversal_graph[player.current_room.id].items():
-                if traversal_graph[player.current_room.id][room_dir] == next_room:
-                    # move the player
-                    player.travel(room_dir)
-                    # append it to traversal_path
-                    traversal_path.append(room_dir)
-                    print(player.current_room.id, traversal_path)
-        # else:
-        #     path.pop()
-                
+        go_back = path.pop()
+        # print(current_room, prev_room)
+        print('Moving', path, go_back, player.current_room.id)
+        for room_dir, room_id in traversal_graph[player.current_room.id].items():
+            if traversal_graph[player.current_room.id][room_dir] == go_back:
+                prev_room = player.current_room.id
+                player.travel(room_dir)
+                traversal_path.append(room_dir)
+                current_room = player.current_room.id
+
     s.push(player.current_room.id)
+    # while len(path) > 0:
+    #     # print('Path - before pop -', player.current_room.id, path)
+    #     next_room = path.pop(0)
+    #     # print('Path - after pop -', path, current_room, player.current_room.id, next_room)
+    #     current_room = player.current_room.id
+    #     print(player.current_room.id, current_room, next_room, path)
+    #     # if next_room is not player.current_room.id:
+    #         # print(player.current_room.id, next_room, path)
+    #     # print('next_room', current_room, next_room, path, traversal_path)
+    #     # print(player.current_room.id, traversal_graph[player.current_room.id].items())
+    #     # print(traversal_graph)
+    #     for room_dir, room_id in traversal_graph[player.current_room.id].items():
+    #         # print(traversal_graph[player.current_room.id][room_dir], next_room)
+    #         if traversal_graph[player.current_room.id][room_dir] == next_room:
+    #             # print('Path Move - ', room_dir, player.current_room.id, next_room, path, len(path))
+    #             print('Next Room -', player.current_room.id, room_dir, next_room, traversal_path)
+    #             prev_move = player.current_room.id
+    #             travel_dir = room_dir
+    #             # move the player
+    #             player.travel(room_dir)
+    #             # append it to traversal_path
+    #             traversal_path.append(room_dir)
+    #             current_room = player.current_room.id
+    #             # print('Path Moved - ', room_dir, current_room, player.current_room.id, next_room, path)
+
+    #             # print('path', next_room, player.current_room.id, traversal_path)
+    #     # else:
+    #     #     print('path 2 -', player.current_room.id, traversal_path)
+    #     #     path.pop()
+    
+    # # print('traversal_graph',len(traversal_graph), len(room_graph))
+    
+    # s.push(player.current_room.id)
+print(player.current_room.id)
+# print(traversal_graph)
 
 # TRAVERSAL TEST - DO NOT MODIFY
 visited_rooms = set()
