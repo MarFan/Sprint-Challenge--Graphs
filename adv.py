@@ -80,15 +80,15 @@ while len(traversal_graph) < len(room_graph):
 
         if '?' in traversal_graph[current_room].values():
             room_exits = []
-            # for room_dir, room_id in traversal_graph[current_room].items():
-            #     if room_id == '?':
-            #         room_exits.append(room_dir)
             for room_dir, room_id in traversal_graph[current_room].items():
                 if room_id == '?':
-                    travel_dir = room_dir
-                    break
+                    room_exits.append(room_dir)
+            # for room_dir, room_id in traversal_graph[current_room].items():
+            #     if room_id == '?':
+            #         travel_dir = room_dir
+            #         break
                     # room_exits.append(room_dir)
-            # travel_dir = random.choice(room_exits)
+            travel_dir = random.choice(room_exits)
             # print(f'{player.current_room.id}, {current_room} heading {travel_dir}')
             prev_room = player.current_room.id
             player.travel(travel_dir)
